@@ -33,7 +33,7 @@ public class FrontControllerV5 extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        //핸들러 호출
+        //HandlerMapping에서 핸들러 조회 후 호출
         Object handler = getHandler(request);
 
         if (handler == null) {
@@ -41,13 +41,16 @@ public class FrontControllerV5 extends HttpServlet {
             return;
         }
 
+        //HandlerAdapter 목록을 조회하여 handler를 담당하는 adapter 조회 후 호출
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
 
+        //adapter.handle() -> handler.process() -> ModelAndView 반환
         ModelView mv = adapter.handle(request, response, handler);
 
-        String viewName = mv.getViewName();//논리이름
-        MyView myView = viewResolver(viewName);
+        String viewName = mv.getViewName();
+        MyView myView = viewResolver(viewName); // 논리적 이름에서 구체적 경로로 변경
 
+        //화면 forward
         myView.render(mv.getModel(), request, response);
     }
 
